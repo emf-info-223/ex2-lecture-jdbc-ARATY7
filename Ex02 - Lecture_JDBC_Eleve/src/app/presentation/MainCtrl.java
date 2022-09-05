@@ -28,7 +28,7 @@ public class MainCtrl implements Initializable {
     };
 
     // DB par défaut
-    final static private TypesDB DB_TYPE = TypesDB.ACCESS;
+    final static private TypesDB DB_TYPE = TypesDB.MYSQL;
 
     private DbWorkerItf dbWrk;
 
@@ -65,7 +65,6 @@ public class MainCtrl implements Initializable {
     }
 
     public void quitter() {
-
         Platform.exit();
     }
 
@@ -73,8 +72,10 @@ public class MainCtrl implements Initializable {
    * METHODES PRIVEES 
      */
     private void afficherPersonne(Personne p) {
-        txtNom.setText(p.getNom());
-        txtPrenom.setText(p.getPrenom());
+        if (p != null) {
+            txtNom.setText(p.getNom());
+            txtPrenom.setText(p.getPrenom());
+        }
     }
 
     private void ouvrirDB() {
