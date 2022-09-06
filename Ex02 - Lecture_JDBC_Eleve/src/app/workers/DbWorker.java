@@ -27,9 +27,9 @@ public class DbWorker implements DbWorkerItf {
         final String user = "root";
         final String password = "emf123";
 
-        System.out.println("url:" + url_remote);
+        System.out.println("url:" + url_local);
         try {
-            dbConnexion = DriverManager.getConnection(url_remote, user, password);
+            dbConnexion = DriverManager.getConnection(url_local, user, password);
         } catch (SQLException ex) {
             throw new MyDBException(SystemLib.getFullMethodName(), ex.getMessage());
         }
@@ -72,21 +72,62 @@ public class DbWorker implements DbWorkerItf {
 
     public List<Personne> lirePersonnes() throws MyDBException {
         listePersonnes = new ArrayList<>();
-        
+        try {
+            Statement st = dbConnexion.createStatement();
+            ResultSet rs = st.executeQuery("select Nom, Prenom from t_personne order by Nom, Prenom");
+
+            while (rs.next()) {
+                listePersonnes.add(new Personne(rs.getString("Nom"), rs.getString("Prenom")));
+            }
+        } catch (SQLException ex) {
+            throw new MyDBException(SystemLib.getFullMethodName(), ex.getMessage());
+        }
         return listePersonnes;
     }
 
     @Override
     public Personne precedentPersonne() throws MyDBException {
 
-        return null;
+        if (listePersonnes == null) {
+            lirePersonnes();
+        }
+        
+        if (listePersonnes.isEmpty()) {
+            return null;
+        }
+
+        index--;
+        
+        Personne p;
+        if (index > 0) {
+            p = listePersonnes.get(index);
+        } else {
+            p = listePersonnes.get(index = 0);
+        }
+
+        return p;
 
     }
 
     @Override
     public Personne suivantPersonne() throws MyDBException {
 
-        return null;
+        if (listePersonnes == null) {
+            lirePersonnes();
+        }
+        
+        if (listePersonnes.isEmpty()) {
+            return null;
+        }
+        
+        Personne p;
+        if (index < listePersonnes.size() - 1) {
+            p = listePersonnes.get(++index);
+        } else {
+            p = listePersonnes.get(listePersonnes.size() - 1);
+        }
+
+        return p;
 
     }
 
